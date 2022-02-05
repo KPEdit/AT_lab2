@@ -83,7 +83,7 @@ class Node:
   def __repr__(self) -> str:
     return f"(lvl={self.lvl}  id={id(self)}  p={id(self.root) if self.root else self.root}  v={self.value}) g={self.groups}"
     
-  def genDot(self, outFile='graph.png'):
+  def genDot(self, outFile='graph'):
     s = "digraph G {"
     ids = set()
     obhod = [t for t in self.optLeftRoot()]
@@ -112,6 +112,35 @@ class Node:
       out.write(s)
     import subprocess
     subprocess.call(['dot', '-Tpng', f'./{outFile}.dot', '-o', f'{outFile}.png'])
+
+  def copyTree(self):
+    nodes = [self] + [i for i in self.optLeftRoot()]
+    news = [Node() for i in range(len(nodes))]
+    head = news[0]
+    fc = True
+    for i,n in enumerate(nodes):
+      if fc:
+        print(nodes[0], nodes[1])
+        news[i].value = Token(n.value.tag, n.value.value)
+        fc = False
+      else:
+        j = nodes.index(n.root)
+        news[i].root = news[j]
+      news[i].value = Token(n.value.tag, n.value.value)
+      for node in n.nodes:
+        j = nodes.index(node)
+        news[i].add_node(news[j])
+    h = Node()
+    h.add_node(head)
+    head = h
+    return head
+
+  def addEnd(self):
+    tmp = Node(None, Token(CONCAT, '.'))
+    ch = self.pop()
+    tmp.add_node(ch)
+    tmp.add(Token(END_MEAT, '\$'))
+    self.add_node(tmp)
 
   def checkLeft(self):
     self.printTree()
@@ -450,11 +479,18 @@ if __name__ == '__main__':
   # test = r"a*a(a[bc])*"
   treelist = tree.build(test)
   # treelist.printTree()
+
   tree.root_null.genDot()
-  print('check')
-  tree.root_null.checkLeft()
-  print('endcheck')
-  print(*tree.genFollowposes(), sep='\n\n')
+  # print('check')
+  # tree.root_null.checkLeft()
+  # print('endcheck')
+  # print(*tree.genFollowposes(), sep='\n\n')
+
+  h = tree.root.nodes[0].nodes[1]
+  print(h)
+  h2 = h.copyTree()
+  h2.addEnd()
+  h2.genDot("graph2")
   # for k in tree.followposes:
   #   print(tree.ids[k])
   # for k in treelist.optLeftRoot():

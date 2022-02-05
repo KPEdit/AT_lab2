@@ -76,11 +76,15 @@ if __name__ == '__main__':
   r3.min_dfa.genDot('r3')
   print()
 
-  # test = r"(abc*|deb[123]|kick|pick)\$"
-  # r1 = ReGex(test)
-  # print(r1.match("abccccc"))
-  # print(r1.match("deb1"))
-  # print(r1.match("deb2"))
-  # print(r1.match("deb3"))
-  # print(r1.match("debk"))
+  test = r"(abc*|deb[123]|kick|pick)\$"
+  test = r"\("
+  r1 = ReGex(test)
+  r1.min_dfa.genDot('meta')
+  print(r1.match('('))
+  print(r1.kPath())
+  print(r1.match("abccccc"))
+  print(r1.match("deb1"))
+  print(r1.match("deb2"))
+  print(r1.match("deb3"))
+  print(r1.match("debk"))
   

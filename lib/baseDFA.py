@@ -150,7 +150,10 @@ class DFA:
           else:
             self.unvisited_set.add(node)
         if c != r'\$':
-          tmp.add(node, c)
+          tc = c
+          if len(c) > 1 and c[0] == '\\':
+            tc = c[1]
+          tmp.add(node, tc)
     self.head = head
     return head
 
@@ -314,10 +317,13 @@ class DFA:
       dugs = ""
       for n in node.nodes:
         if n._to == nodes[j]:
+          tt = n.value
+          if n.value in SPECIALS:
+            tt = "\\" + tt
           if dugs == "":
-            dugs = n.value
+            dugs = tt
           else:
-            dugs = f"{dugs}|{n.value}"
+            dugs = f"{dugs}|{tt}"
       if len(dugs) > 1:
         dugs = f"({dugs})"
       self.__Rijk_dict[key] = dugs
